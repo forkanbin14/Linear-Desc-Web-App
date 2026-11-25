@@ -1,0 +1,6 @@
+{
+  "name": "Systonic Linear Desc",
+  "description": "Industrial Optimization-as-a-Service platform for LP, MIP, and Convex QP financial and supply chain modeling powered by HiGHS and Syton AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,272 @@
+{
+  "projects": {
+    "proj_aeb51164d6": {
+      "id": "proj_aeb51164d6",
+      "name": "Instant Equation LP Model",
+      "domain": "Custom",
+      "description": "Formulated via Automatic Mathematical Equation Parser (LP-01)",
+      "createdAt": "2026-11-24T12:10:17.674Z",
+      "updatedAt": "2026-11-24T12:10:17.784Z",
+      "versionIds": [
+        "ver_de4ff64daf"
+      ],
+      "runIds": [
+        "run_4eb09fca0c"
+      ]
+    }
+  },
+  "versions": {
+    "ver_de4ff64daf": {
+      "id": "ver_de4ff64daf",
+      "projectId": "proj_aeb51164d6",
+      "versionNumber": 1,
+      "hash": "9724c1f697",
+      "createdAt": "2026-11-24T12:10:17.674Z",
+      "createdBy": "syton-ai@systonic.ai",
+      "role": "modeler",
+      "commitMessage": "Initial model version",
+      "spec": {
+        "name": "Instant Equation LP Model",
+        "domain": "Custom",
+        "description": "Formulated via Automatic Mathematical Equation Parser (LP-01)",
+        "variables": [
+          {
+            "name": "x",
+            "lb": 0,
+            "ub": null,
+            "type": "continuous",
+            "unit": "units"
+          },
+          {
+            "name": "y",
+            "lb": 0,
+            "ub": null,
+            "type": "continuous",
+            "unit": "units"
+          }
+        ],
+        "constraints": [
+          {
+            "name": "c_1",
+            "terms": {
+              "x": 2,
+              "y": 1
+            },
+            "sense": "<=",
+            "rhs": 100
+          },
+          {
+            "name": "c_2",
+            "terms": {
+              "x": 1
+            },
+            "sense": "<=",
+            "rhs": 40
+          }
+        ],
+        "objective": {
+          "sense": "max",
+          "terms": {
+            "x": 40,
+            "y": 30
+          },
+          "offset": 0
+        },
+        "currency": "BDT"
+      },
+      "validation": {
+        "valid": true,
+        "problemClass": "LP",
+        "numVars": 2,
+        "numContinuous": 2,
+        "numInteger": 0,
+        "numBinary": 0,
+        "numConstraints": 2,
+        "numNonzeros": 3,
+        "numQuadraticTerms": 0,
+        "minNonzeroCoef": 1,
+        "maxAbsCoef": 100,
+        "dynamicRange": 100,
+        "issues": []
+      }
+    }
+  },
+  "runs": {
+    "run_4eb09fca0c": {
+      "id": "run_4eb09fca0c",
+      "projectId": "proj_aeb51164d6",
+      "modelVersionId": "ver_de4ff64daf",
+      "versionNumber": 1,
+      "createdAt": "2026-11-24T12:10:17.784Z",
+      "triggeredBy": "syton-ai@systonic.ai",
+      "role": "modeler",
+      "params": {
+        "solverId": "highs-wasm",
+        "timeLimitSec": 60,
+        "mipRelGap": 0.0001,
+        "presolve": "on",
+        "autoScale": true,
+        "computeRanging": true,
+        "computeIis": true
+      },
+      "result": {
+        "status": "optimal",
+        "rawStatus": "Optimal",
+        "solverName": "HiGHS (WASM Industrial Engine)",
+        "solverVersion": "1.15.1",
+        "problemClass": "LP",
+        "solveTimeMs": 107.15,
+        "iterations": 0,
+        "mipNodes": 0,
+        "mipGap": null,
+        "bestBound": null,
+        "objective": 3000,
+        "values": {
+          "x": 0,
+          "y": 100
+        },
+        "duals": {
+          "c_1": 30,
+          "c_2": 0
+        },
+        "reducedCosts": {
+          "x": -20,
+          "y": 0
+        },
+        "variableDetails": [
+          {
+            "name": "x",
+            "type": "continuous",
+            "unit": "units",
+            "value": 0,
+            "lb": 0,
+            "ub": null,
+            "objCoef": 40,
+            "reducedCost": -20,
+            "basisStatus": "At Lower",
+            "atBound": "lower",
+            "allowableObjMin": null,
+            "allowableObjMax": 60
+          },
+          {
+            "name": "y",
+            "type": "continuous",
+            "unit": "units",
+            "value": 100,
+            "lb": 0,
+            "ub": null,
+            "objCoef": 30,
+            "reducedCost": 0,
+            "basisStatus": "Basic",
+            "atBound": "interior",
+            "allowableObjMin": 20,
+            "allowableObjMax": null
+          }
+        ],
+        "constraintDetails": [
+          {
+            "name": "c_1",
+            "sense": "<=",
+            "rhs": 100,
+            "activity": 100,
+            "slack": 0,
+            "utilizationPct": 100,
+            "shadowPrice": 30,
+            "binding": true,
+            "basisStatus": "At Upper",
+            "allowableRhsMin": 0,
+            "allowableRhsMax": null
+          },
+          {
+            "name": "c_2",
+            "sense": "<=",
+            "rhs": 40,
+            "activity": 0,
+            "slack": 40,
+            "utilizationPct": 0,
+            "shadowPrice": 0,
+            "binding": false,
+            "basisStatus": "Basic",
+            "allowableRhsMin": 0,
+            "allowableRhsMax": 40
+          }
+        ],
+        "validation": {
+          "valid": true,
+          "problemClass": "LP",
+          "numVars": 2,
+          "numContinuous": 2,
+          "numInteger": 0,
+          "numBinary": 0,
+          "numConstraints": 2,
+          "numNonzeros": 3,
+          "numQuadraticTerms": 0,
+          "minNonzeroCoef": 1,
+          "maxAbsCoef": 100,
+          "dynamicRange": 100,
+          "issues": []
+        },
+        "scalingApplied": true,
+        "iis": null,
+        "unboundedDiagnosis": null,
+        "multipleOptimal": null,
+        "lpText": "Maximize\n obj: 40 x + 30 y\nSubject To\n c_1: 2 x + y <= 100\n c_2: x <= 40\nBounds\n x >= 0\n y >= 0\nEnd"
+      },
+      "aiExplanation": "1) Optimal Outcome (Max Objective): Z* = ৳3,000 (107.2 ms)\n\n2) Recommended Allocation:\n• y: 100 units\n\n3) Binding Bottlenecks:\n• c_1 (limit 100, Shadow Price: 30.00)"
+    }
+  },
+  "auditLog": [
+    {
+      "id": "aud_a728321e16",
+      "timestamp": "2026-11-24T12:10:17.784Z",
+      "actor": "syton-ai@systonic.ai",
+      "role": "modeler",
+      "action": "SOLVE_EXECUTED",
+      "projectId": "proj_aeb51164d6",
+      "projectName": "Instant Equation LP Model",
+      "modelVersionId": "ver_de4ff64daf",
+      "runId": "run_4eb09fca0c",
+      "solverVersion": "HiGHS 1.15.1",
+      "status": "optimal",
+      "objective": 3000,
+      "details": "Solved v1 (LP) -> OPTIMAL in 107.15ms"
+    },
+    {
+      "id": "aud_57c662e9f3",
+      "timestamp": "2026-11-24T12:10:17.674Z",
+      "actor": "syton-ai@systonic.ai",
+      "role": "modeler",
+      "action": "AI_SPEC_CONFIRMED",
+      "projectId": "proj_aeb51164d6",
+      "projectName": "Instant Equation LP Model",
+      "modelVersionId": "ver_de4ff64daf",
+      "details": "Created project v1 (LP, 2 vars, 2 constraints)"
+    },
+    {
+      "id": "aud_226a5ef7fb",
+      "timestamp": "2026-11-20T10:26:38.014Z",
+      "actor": "workspace@a2z.corp",
+      "role": "modeler",
+      "action": "SOLVE_EXECUTED",
+      "projectId": "proj_7dfb375329",
+      "projectName": "User Custom LP",
+      "modelVersionId": "ver_e8eb0d3671",
+      "runId": "run_dcf2dc7b2c",
+      "solverVersion": "HiGHS 1.15.1",
+      "status": "optimal",
+      "objective": 200,
+      "details": "Solved v1 (LP) -> OPTIMAL in 68.4ms"
+    },
+    {
+      "id": "aud_3c4717f493",
+      "timestamp": "2026-11-20T10:26:37.944Z",
+      "actor": "workspace@a2z.corp",
+      "role": "modeler",
+      "action": "MODEL_CREATED",
+      "projectId": "proj_7dfb375329",
+      "projectName": "User Custom LP",
+      "modelVersionId": "ver_e8eb0d3671",
+      "details": "Created project v1 (LP, 2 vars, 1 constraints)"
+    }
+  ]
+}

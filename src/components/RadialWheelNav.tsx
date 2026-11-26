@@ -163,7 +163,7 @@ export function RadialWheelNav({
           aria-modal="true"
           aria-label={lang === 'bn' ? 'সার্কুলার হুইল নেভিগেশন মেনু' : 'Circular Wheel Navigation Menu'}
         >
-          {/* Backdrop Blur Scrim */}
+          {/* Backdrop Scrim (avoid heavy blur on mobile GPUs) */}
           <motion.div
             key="radial-wheel-backdrop"
             initial={{ opacity: 0 }}
@@ -171,45 +171,42 @@ export function RadialWheelNav({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.1 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-950/55 backdrop-blur-md"
+            className="fixed inset-0 bg-slate-950/65 sm:backdrop-blur-sm"
           />
 
           {/* Top Floating Close Button */}
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+            exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.1 }}
             className="relative z-10 w-full max-w-lg flex items-center justify-end mb-1.5 sm:mb-3 px-1 shrink-0"
           >
             <div className="flex items-center gap-2 shrink-0">
-              <motion.button
-                whileHover={{ scale: 1.06, rotate: 90 }}
-                whileTap={{ scale: 0.92 }}
-                transition={{ type: 'spring', stiffness: 680, damping: 32 }}
+              <button
                 type="button"
                 onClick={onClose}
                 aria-label={lang === 'bn' ? 'মেনু বন্ধ করুন' : 'Close menu'}
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 text-white flex items-center justify-center transition-colors active:scale-95 touch-manipulation"
               >
                 <X className="w-4 h-4" />
-              </motion.button>
+              </button>
             </div>
           </motion.div>
 
           {/* CapCut / Filmora Style Rotary Circle Wheel */}
           <motion.div
             key="radial-wheel-stage"
-            initial={{ scale: 0.78, rotate: -24, opacity: 0 }}
+            initial={{ scale: 0.82, rotate: -18, opacity: 0 }}
             animate={{ scale: 1, rotate: 0, opacity: 1 }}
-            exit={{ scale: 0.84, rotate: 18, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 720, damping: 38, mass: 0.45 }}
+            exit={{ scale: 0.86, rotate: 14, opacity: 0 }}
+            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
             onWheel={handleWheelScroll}
             style={{ width: wheelBoxSize, height: wheelBoxSize }}
-            className="relative z-10 flex items-center justify-center select-none shrink-0"
+            className="relative z-10 flex items-center justify-center select-none shrink-0 will-change-transform"
           >
             {/* Outer Glossy Ring Frame */}
-            <div className="absolute inset-4 sm:inset-5 rounded-full bg-slate-900/80 border border-white/15 shadow-2xl shadow-teal-950/50 backdrop-blur-xl" />
+            <div className="absolute inset-4 sm:inset-5 rounded-full bg-slate-900/95 border border-white/15 shadow-2xl shadow-teal-950/50" />
 
             {/* SVG Precision Dial Rings and Tick Marks */}
             <svg
@@ -267,16 +264,10 @@ export function RadialWheelNav({
               return (
                 <motion.div
                   key={item.id}
-                  initial={{ x: x * 0.45, y: y * 0.45, scale: 0.5, opacity: 0, rotate: -14 }}
-                  animate={{ x, y, scale: 1, opacity: 1, rotate: 0 }}
-                  exit={{ x: 0, y: 0, scale: 0.4, opacity: 0, rotate: 12 }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 700,
-                    damping: 35,
-                    mass: 0.45,
-                    delay: 0.012 + idx * 0.012,
-                  }}
+                  initial={{ x: x * 0.55, y: y * 0.55, scale: 0.65, opacity: 0 }}
+                  animate={{ x, y, scale: 1, opacity: 1 }}
+                  exit={{ x: 0, y: 0, scale: 0.55, opacity: 0 }}
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                   className="absolute z-20 flex flex-col items-center"
                 >
                   <motion.button

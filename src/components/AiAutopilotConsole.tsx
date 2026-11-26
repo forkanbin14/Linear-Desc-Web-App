@@ -1040,17 +1040,21 @@ export function AiAutopilotConsole({
       ref={constraintsRef}
       className="fixed inset-3 sm:inset-5 z-50 pointer-events-none"
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence initial={false}>
         {expanded ? (
           <motion.div
             key="ai-agent-workspace-panel"
             layout
-            initial={{ opacity: 0, scale: 0.92, y: 18 }}
+            initial={{ opacity: 0, scale: 0.84, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.92, y: 18 }}
-            transition={{ type: 'spring', stiffness: 600, damping: 34, mass: 0.55 }}
+            exit={{ opacity: 0, scale: 0.88, y: 18 }}
+            transition={{
+              duration: 0.24,
+              ease: [0.16, 1, 0.3, 1],
+              layout: { duration: 0.24, ease: [0.16, 1, 0.3, 1] },
+            }}
             style={{ transformOrigin: 'bottom right' }}
-            className={`pointer-events-auto flex flex-col transition-[width,height] duration-150 ${
+            className={`pointer-events-auto flex flex-col transition-[width,height] duration-200 will-change-transform ${
               theaterWide
                 ? 'fixed inset-x-2 bottom-2 h-[86dvh] sm:inset-auto sm:absolute sm:bottom-0 sm:right-0 sm:w-[680px] sm:h-[82vh] sm:max-h-[780px]'
                 : 'fixed inset-x-2 bottom-2 h-[84dvh] sm:inset-auto sm:absolute sm:bottom-0 sm:right-0 sm:w-[465px] sm:h-[610px] sm:max-h-[84vh]'
@@ -1647,13 +1651,8 @@ export function AiAutopilotConsole({
             drag
             dragConstraints={constraintsRef}
             dragElastic={0.14}
-            dragTransition={{
-              bounceStiffness: 420,
-              bounceDamping: 26,
-              power: 0.22,
-              timeConstant: 160,
-            }}
-            whileDrag={{ scale: 1.12 }}
+            dragMomentum={false}
+            whileDrag={{ scale: 1.08 }}
             style={{ x: bubbleX, y: bubbleY, touchAction: 'none' }}
             onDragStart={() => {
               didDragRef.current = false;
@@ -1668,10 +1667,10 @@ export function AiAutopilotConsole({
               setIsDraggingBubble(false);
               const clamped = clampBubbleOffset(bubbleX.get(), bubbleY.get());
               if (clamped.x !== bubbleX.get()) {
-                animate(bubbleX, clamped.x, { type: 'spring', stiffness: 440, damping: 28, mass: 0.65 });
+                animate(bubbleX, clamped.x, { type: 'spring', stiffness: 520, damping: 32, mass: 0.5 });
               }
               if (clamped.y !== bubbleY.get()) {
-                animate(bubbleY, clamped.y, { type: 'spring', stiffness: 440, damping: 28, mass: 0.65 });
+                animate(bubbleY, clamped.y, { type: 'spring', stiffness: 520, damping: 32, mass: 0.5 });
               }
               if (typeof window !== 'undefined') {
                 setBubbleOnLeft(clamped.x < -window.innerWidth * 0.45);
@@ -1690,10 +1689,10 @@ export function AiAutopilotConsole({
             className="pointer-events-auto absolute bottom-0 right-0 cursor-grab active:cursor-grabbing select-none touch-none"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.72 }}
+              initial={{ opacity: 0, scale: 0.78 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.72 }}
-              transition={{ type: 'spring', stiffness: 440, damping: 26, mass: 0.65 }}
+              exit={{ opacity: 0, scale: 0.78 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="relative flex items-center justify-center"
             >
               {/* Greeting Tooltip Speech Bubble (flips side automatically based on bubble position) */}
@@ -1705,18 +1704,15 @@ export function AiAutopilotConsole({
                       if (didDragRef.current) return;
                       onToggleExpand();
                     }}
-                    initial={{ opacity: 0, x: bubbleOnLeft ? -10 : 10, scale: 0.92 }}
+                    initial={{ opacity: 0, x: bubbleOnLeft ? -8 : 8, scale: 0.96 }}
                     animate={{
                       opacity: 1,
                       x: 0,
                       scale: 1,
                     }}
-                    exit={{ opacity: 0, x: bubbleOnLeft ? -10 : 10, scale: 0.92 }}
-                    transition={{
-                      opacity: { duration: 0.16 },
-                      scale: { duration: 0.16 },
-                    }}
-                    className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg shadow-slate-900/10 rounded-full text-xs font-semibold text-slate-800 hover:border-teal-500 transition-colors whitespace-nowrap absolute top-1/2 -translate-y-1/2 ${
+                    exit={{ opacity: 0, x: bubbleOnLeft ? -8 : 8, scale: 0.96 }}
+                    transition={{ duration: 0.1 }}
+                    className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 shadow-lg shadow-slate-900/10 rounded-full text-xs font-semibold text-slate-800 hover:border-teal-500 transition-colors whitespace-nowrap absolute top-1/2 -translate-y-1/2 touch-manipulation ${
                       bubbleOnLeft ? 'left-full ml-3' : 'right-full mr-3'
                     }`}
                   >
@@ -1744,7 +1740,7 @@ export function AiAutopilotConsole({
                       onToggleExpand();
                     }}
                     aria-label={t.autopilot.badge}
-                    className="relative w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center transition-colors"
+                    className="relative w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center transition-colors touch-manipulation active:scale-95"
                   >
                     <OrbitalThreeDots
                       surface="dark"

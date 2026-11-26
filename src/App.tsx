@@ -916,22 +916,34 @@ export default function App() {
         {isScrolled && (
           <motion.div
             key="floating-top-right-container"
-            initial={{ opacity: 0, y: -10, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.92 }}
-            transition={{ type: 'spring', stiffness: 720, damping: 36, mass: 0.45 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.12, ease: [0.2, 0, 0, 1] }}
             onMouseEnter={() => {
+              if (
+                typeof window !== 'undefined' &&
+                !window.matchMedia('(hover: hover) and (pointer: fine)').matches
+              ) {
+                return;
+              }
               clearFloatingLeaveTimer();
               if (!floatingNavOpen) {
                 setFloatingNavOpen(true);
               }
             }}
             onMouseLeave={() => {
+              if (
+                typeof window !== 'undefined' &&
+                !window.matchMedia('(hover: hover) and (pointer: fine)').matches
+              ) {
+                return;
+              }
               if (floatingNavPinned) return;
               clearFloatingLeaveTimer();
               floatingNavLeaveTimerRef.current = window.setTimeout(() => {
                 setFloatingNavOpen(false);
-              }, 160);
+              }, 140);
             }}
             className="fixed top-2.5 sm:top-3 right-2.5 sm:right-5 z-50"
           >
@@ -1022,20 +1034,20 @@ export default function App() {
                 return (
                   <motion.div
                     key="floating-quarter-wheel"
-                    initial={{ rotate: -86, scale: 0.24, opacity: 0 }}
+                    initial={{ rotate: -48, scale: 0.45, opacity: 0 }}
                     animate={{ rotate: 0, scale: 1, opacity: 1 }}
-                    exit={{ rotate: -78, scale: 0.24, opacity: 0 }}
-                    transition={{ type: 'spring', stiffness: 520, damping: 32, mass: 0.5 }}
+                    exit={{ rotate: -42, scale: 0.5, opacity: 0 }}
+                    transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
                     style={{
                       width: dialSize,
                       height: dialSize,
                       transformOrigin: `${dialSize - hubOffset}px ${hubOffset}px`,
                     }}
-                    className="absolute top-0 right-0 pointer-events-auto select-none"
+                    className="absolute top-0 right-0 pointer-events-auto select-none will-change-transform"
                   >
-                    {/* Translucent Obsidian Quarter-Circle Dial Surface */}
+                    {/* High-Contrast Obsidian Quarter-Circle Dial Surface (no GPU-heavy blur during animation) */}
                     <div
-                      className="absolute inset-0 bg-slate-950/88 backdrop-blur-xl border border-teal-400/25 shadow-2xl shadow-slate-950/45"
+                      className="absolute inset-0 bg-slate-950/96 border border-teal-400/25 shadow-2xl shadow-slate-950/45"
                       style={{
                         borderRadius: `26px 26px 26px ${dialSize}px`,
                       }}
@@ -1100,31 +1112,20 @@ export default function App() {
                           style={{ left: xFromLeft, top: yFromTop }}
                           className="absolute -translate-x-1/2 -translate-y-1/2 z-20"
                         >
-                          <motion.button
+                          <button
                             type="button"
-                            initial={{ scale: 0.45, rotate: -48, opacity: 0 }}
-                            animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                            transition={{
-                              type: 'spring',
-                              stiffness: 640,
-                              damping: 32,
-                              mass: 0.45,
-                              delay: 0.015 + idx * 0.016,
-                            }}
-                            whileHover={{ scale: 1.12 }}
-                            whileTap={{ scale: 0.92 }}
                             onClick={() => {
                               handleSelectNavTab(item.id);
                               closeFloatingWheel();
                             }}
                             title={item.label}
-                            className="flex flex-col items-center group focus:outline-none"
+                            className="flex flex-col items-center group focus:outline-none touch-manipulation active:scale-95 transition-transform duration-75"
                           >
                             <span
-                              className={`w-9 h-9 sm:w-10.5 sm:h-10.5 rounded-full flex items-center justify-center border-2 transition-all shadow-lg ${
+                              className={`w-9 h-9 sm:w-10.5 sm:h-10.5 rounded-full flex items-center justify-center border-2 transition-colors shadow-lg ${
                                 active
                                   ? 'bg-teal-400 border-white text-slate-950 ring-2 ring-teal-300/40'
-                                  : 'bg-slate-900/95 border-slate-600/80 text-slate-100 group-hover:border-teal-400 group-hover:text-teal-300'
+                                  : 'bg-slate-900 border-slate-600/80 text-slate-100 group-hover:border-teal-400 group-hover:text-teal-300'
                               }`}
                             >
                               <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
@@ -1133,19 +1134,20 @@ export default function App() {
                               className={`mt-1 px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold whitespace-nowrap shadow ${
                                 active
                                   ? 'bg-teal-400 text-slate-950'
-                                  : 'bg-slate-900/95 text-slate-100 border border-white/15 group-hover:bg-white group-hover:text-slate-900'
+                                  : 'bg-slate-900 text-slate-100 border border-white/15 group-hover:bg-white group-hover:text-slate-900'
                               }`}
                             >
                               {item.shortLabel}
                             </span>
-                          </motion.button>
+                          </button>
                         </div>
                       );
                     })}
 
                     {/* Inner Rotary Arc: 4 Quick Utility Orbs */}
-                    {utilityOrbs.map((orb, idx) => {
-                      const rad = (innerAngles[idx] * Math.PI) / 180;
+                    {utilityOrbs.map((orb) => {
+                      const orbIdx = utilityOrbs.indexOf(orb);
+                      const rad = (innerAngles[orbIdx] * Math.PI) / 180;
                       const xFromLeft = dialSize - hubOffset + Math.cos(rad) * innerR;
                       const yFromTop = hubOffset + Math.sin(rad) * innerR;
 
@@ -1155,8 +1157,8 @@ export default function App() {
                           : orb.highlight === 'ai'
                             ? 'bg-white border-teal-300 text-slate-900 hover:border-teal-400'
                             : orb.highlight === 'emerald'
-                              ? 'bg-emerald-950/90 border-emerald-400/60 text-emerald-300 hover:border-emerald-300'
-                              : 'bg-slate-800/95 border-slate-500/80 text-slate-100 hover:border-teal-400';
+                              ? 'bg-emerald-950/95 border-emerald-400/60 text-emerald-300 hover:border-emerald-300'
+                              : 'bg-slate-800 border-slate-500/80 text-slate-100 hover:border-teal-400';
 
                       return (
                         <div
@@ -1164,32 +1166,21 @@ export default function App() {
                           style={{ left: xFromLeft, top: yFromTop }}
                           className="absolute -translate-x-1/2 -translate-y-1/2 z-20"
                         >
-                          <motion.button
+                          <button
                             type="button"
-                            initial={{ scale: 0.4, rotate: -35, opacity: 0 }}
-                            animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                            transition={{
-                              type: 'spring',
-                              stiffness: 640,
-                              damping: 32,
-                              mass: 0.45,
-                              delay: 0.02 + idx * 0.014,
-                            }}
-                            whileHover={{ scale: 1.12 }}
-                            whileTap={{ scale: 0.92 }}
                             onClick={orb.onClick}
                             title={orb.label}
-                            className="flex flex-col items-center group focus:outline-none"
+                            className="flex flex-col items-center group focus:outline-none touch-manipulation active:scale-95 transition-transform duration-75"
                           >
                             <span
-                              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border-2 transition-all shadow-md ${orbCircleStyle}`}
+                              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border-2 transition-colors shadow-md ${orbCircleStyle}`}
                             >
                               {orb.renderIcon()}
                             </span>
-                            <span className="mt-0.5 px-1.5 py-px rounded-full text-[8.5px] sm:text-[9.5px] font-semibold whitespace-nowrap bg-slate-900/90 text-slate-100 border border-white/10 group-hover:bg-white group-hover:text-slate-900">
+                            <span className="mt-0.5 px-1.5 py-px rounded-full text-[8.5px] sm:text-[9.5px] font-semibold whitespace-nowrap bg-slate-900 text-slate-100 border border-white/10 group-hover:bg-white group-hover:text-slate-900">
                               {orb.label}
                             </span>
-                          </motion.button>
+                          </button>
                         </div>
                       );
                     })}
@@ -1199,12 +1190,9 @@ export default function App() {
             </AnimatePresence>
 
             {/* Top-Right Center Hub Trigger Pill / Close Orb */}
-            <motion.button
+            <button
               key="floating-nav-trigger"
               type="button"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.93 }}
-              transition={{ type: 'spring', stiffness: 720, damping: 36, mass: 0.45 }}
               onClick={() => {
                 clearFloatingLeaveTimer();
                 if (!floatingNavOpen) {
@@ -1226,17 +1214,17 @@ export default function App() {
                     ? 'নেভিগেশন মেনু খুলুন'
                     : 'Open navigation menu'
               }
-              className={`relative z-30 flex items-center gap-2 rounded-full transition-colors shadow-lg ${
+              className={`relative z-30 flex items-center gap-2 rounded-full transition-colors duration-100 active:scale-95 shadow-lg touch-manipulation ${
                 floatingNavOpen
                   ? 'w-11 h-11 justify-center bg-teal-500 hover:bg-teal-400 border-2 border-white text-slate-950 shadow-teal-950/30'
-                  : 'bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-slate-900/10 hover:border-teal-600/50 pl-3 pr-3.5 py-2 text-xs font-semibold text-slate-900'
+                  : 'bg-white border border-slate-200 shadow-slate-900/10 hover:border-teal-600/50 pl-3 pr-3.5 py-2 text-xs font-semibold text-slate-900'
               }`}
             >
               {floatingNavOpen ? (
                 <motion.span
-                  initial={{ rotate: -90, scale: 0.7 }}
+                  initial={{ rotate: -65, scale: 0.78 }}
                   animate={{ rotate: 0, scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 680, damping: 30 }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="inline-flex items-center justify-center"
                 >
                   <X className="w-4.5 h-4.5" />
@@ -1258,7 +1246,7 @@ export default function App() {
                   <span>{lang === 'bn' ? 'মেনু' : 'Menu'}</span>
                 </>
               )}
-            </motion.button>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

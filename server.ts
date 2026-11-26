@@ -28,6 +28,7 @@ import {
   generateProjectReasoningQuestions,
   nlToModelSpec,
   planAiAutomation,
+  transcribeAudioToText,
 } from './server/ai.ts';
 import { buildTemplateWorkbook, exportSolveReportWorkbook, parseExcelToModelSpec } from './server/excel.ts';
 import { defaultSolverAdapter } from './server/solverAdapter.ts';
@@ -889,6 +890,28 @@ async function startServer() {
       res.json({ result });
     } catch (err) {
       res.status(400).json({ error: err instanceof Error ? err.message : 'Assignment solve failed' });
+    }
+  });
+
+  app.post('/api/ai/transcribe-audio', async (req, res) => {
+    try {
+      const { audioBase64, mimeType, language } = req.body as {
+        audioBase64?: string;
+        mimeType?: string;
+        language?: 'en' | 'bn';
+      };
+      if (!audioBase64 || typeof audioBase64 !== 'string') {
+        return res.status(400).json({ error: 'Audio recording payload is required.' });
+      }
+      const text = await transcribeAudioToText(
+        audioBase64,
+        mimeType || 'audio/webm',
+        language === 'bn' ? 'bn' : 'en',
+      );
+      res.json({ text });
+    } catch (err) {
+      console.error('AI transcribe-audio error:', err);
+      res.status(500).json({ error: formatGeminiErrorMessage(err) });
     }
   });
 

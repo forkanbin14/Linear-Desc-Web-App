@@ -455,8 +455,8 @@ export function buildInstantSolveBriefing(
   if (result.status === 'infeasible') {
     const conflicts = result.iis?.conflictingConstraints?.slice(0, 4).join(', ') || 'constraints';
     return isBn
-      ? `সতর্কতা: "${spec.name}" মডেলটি বর্তমান সীমাবদ্ধতায় সমাধানযোগ্য নয় (Infeasible)। প্রধান সাংঘর্ষিক শর্ত: ${conflicts}। সেন্সিটিভিটি ট্যাবে গিয়ে বা Syton AI-কে সীমা শিথিল করতে বলুন।`
-      : `Notice: "${spec.name}" is currently INFEASIBLE. Primary conflicting constraints: ${conflicts}. Open the Sensitivity tab or ask Syton AI to relax conflicting limits.`;
+      ? `সতর্কতা: "${spec.name}" মডেলটি বর্তমান সীমাবদ্ধতায় সমাধানযোগ্য নয় (Infeasible)। প্রধান সাংঘর্ষিক শর্ত: ${conflicts}। সেন্সিটিভিটি ট্যাবে গিয়ে বা Syston-কে সীমা শিথিল করতে বলুন।`
+      : `Notice: "${spec.name}" is currently INFEASIBLE. Primary conflicting constraints: ${conflicts}. Open the Sensitivity tab or ask Syston to relax conflicting limits.`;
   }
 
   const topVars = result.variableDetails
@@ -1029,12 +1029,12 @@ export async function planAiAutomation(
     {
       contents: `Instruction:\n"""\n${instruction}\n"""\nContext:\n${JSON.stringify(compactContext)}`,
       config: {
-      systemInstruction: `You are "Syton AI", the Autonomous Operations Research AI of "Systonic Linear Desc", a bilingual (English + Bengali) Optimization-as-a-Service platform.
+      systemInstruction: `You are "Syston", the Autonomous Operations Research AI of "Systonic Linear Desc", a bilingual (English + Bengali) Optimization-as-a-Service platform.
 Interpret the user's instruction written in Bengali, Banglish (Bengali written in Latin script), or English, and produce the exact JSON action plan to automate the platform.
 Respect the user's selected Capital Currency (${context.uiCurrency || 'BDT'}) when creating financial/capital values and explaining amounts (BDT = ৳ / Taka, USD = $ / Dollar).
 
 Choose the single best actionType from:
-1. "START_PROJECT_DISCOVERY": User asks to create/make/build a new project or optimization model (e.g. "Create a project", "Notun project banabo", "নতুন প্রজেক্ট তৈরি করতে চাই", "Build a project for my garment factory", "Ami ekti business project chai") WITHOUT supplying complete mathematical LP numbers, variable coefficients, and constraint limits. When chosen, Syton AI opens the 2-step guided intake form (Project Description, Category, Difficulty, Level, Quantity, Business Category, Sector) followed by Reasoning questions! Optionally populate "discoveryPrefill" if the user hinted a topic/sector.
+1. "START_PROJECT_DISCOVERY": User asks to create/make/build a new project or optimization model (e.g. "Create a project", "Notun project banabo", "নতুন প্রজেক্ট তৈরি করতে চাই", "Build a project for my garment factory", "Ami ekti business project chai") WITHOUT supplying complete mathematical LP numbers, variable coefficients, and constraint limits. When chosen, Syston opens the 2-step guided intake form (Project Description, Category, Difficulty, Level, Quantity, Business Category, Sector) followed by Reasoning questions! Optionally populate "discoveryPrefill" if the user hinted a topic/sector.
 2. "CREATE_AND_SOLVE_PROJECT": User ALREADY provides specific mathematical coefficients, limits, and numeric constraints in the prompt (e.g., profits, costs, resource caps, equations like "Shirt gives $50 profit (2 hrs labor)... Max labor is 200 hrs") OR explicitly says "build and solve immediately with numbers". Populate "modelSpec" completely and set targetTab="solve".
 3. "UPDATE_AND_SOLVE_PROJECT": An activeProject exists AND user asks to modify/edit/update constraints, RHS limits, variable bounds, types, or objective coefficients (e.g., "labor 120 koro", "add demand constraint", "make variables integer", "x er profit 50 koro") and re-solve. Output the COMPLETE updated "modelSpec" (preserving untouched variables/constraints from activeProject.spec and applying requested edits) and set targetTab="solve". (If no activeProject exists and numbers are missing, use START_PROJECT_DISCOVERY instead.)
 4. "SOLVE_ACTIVE_PROJECT": Active project exists and user simply says "solve koro", "run optimization", or "calculate optimal". Set targetTab="solve".
@@ -1182,7 +1182,7 @@ export async function generateProjectReasoningQuestions(
   const response = await callGeminiWithRetry({
     contents: `Generate tailored Optimization Reasoning Questions for this Stage-1 Project Brief:\n${JSON.stringify(intake)}`,
     config: {
-      systemInstruction: `You are "Syton AI", Principal Operations Research & Quantitative Strategist of "Systonic Linear Desc".
+      systemInstruction: `You are "Syston", Principal Operations Research & Quantitative Strategist of "Systonic Linear Desc".
 The user has submitted their Stage-1 project brief:
 - Project Description: ${intake.description}
 - Optimization Category: ${intake.category}
@@ -1211,7 +1211,7 @@ Guidelines:
         properties: {
           introMessage: {
             type: Type.STRING,
-            description: 'Short friendly message from Syton AI introducing the reasoning step',
+            description: 'Short friendly message from Syston introducing the reasoning step',
           },
           questions: {
             type: Type.ARRAY,
@@ -1293,7 +1293,7 @@ export async function analyzeAndBuildProjectFromIntake(
   const response = await callGeminiWithRetry({
     contents: `Stage-1 Brief:\n${JSON.stringify(intake)}\nGoal & Scope:\n${JSON.stringify(answers)}\nSynthesize a FEASIBLE optimization specification.`,
     config: {
-      systemInstruction: `You are "Syton AI", Autonomous Operations Research Architect of "Systonic Linear Desc".
+      systemInstruction: `You are "Syston", Autonomous Operations Research Architect of "Systonic Linear Desc".
 You have collected BOTH Stage-1 Project Brief and Stage-2 Reasoning Answers from the user.
 Now perform rigorous quantitative analysis and synthesize a complete, strictly FEASIBLE, non-trivial mathematical LP/MIP/QP project.
 
@@ -1321,7 +1321,7 @@ Critical Mathematical & Modeling Rules:
           },
           replyMessage: {
             type: Type.STRING,
-            description: 'Concise confirmation message from Syton AI announcing the built & solved project',
+            description: 'Concise confirmation message from Syston announcing the built & solved project',
           },
           commitMessage: { type: Type.STRING },
           modelSpec: {
@@ -1447,8 +1447,55 @@ Critical Mathematical & Modeling Rules:
       (isBn
         ? `"${spec.name}" প্রজেক্টটি বিশ্লেষণ করে তৈরি ও সমাধান করা হয়েছে।`
         : `Analyzed your requirements, created "${spec.name}", and solved it with HiGHS.`),
-    commitMessage: parsed.commitMessage?.trim() || 'Synthesized by Syton AI Guided Reasoning',
+    commitMessage: parsed.commitMessage?.trim() || 'Synthesized by Syston Guided Reasoning',
     spec,
   };
 }
 
+export async function transcribeAudioToText(
+  audioBase64: string,
+  mimeType: string,
+  language: 'en' | 'bn' = 'en',
+): Promise<string> {
+  const cleanBase64 = audioBase64.replace(/^data:[^;]+;base64,/i, '').trim();
+  if (!cleanBase64) {
+    throw new Error('Audio payload is empty.');
+  }
+  const normalizedMime = (mimeType || 'audio/webm').split(';')[0].trim() || 'audio/webm';
+  const ai = getAiClient();
+  const promptText =
+    language === 'bn'
+      ? 'Transcribe the spoken speech accurately into plain text only (supports Bengali বাংলা, English, and Banglish naturally). Return ONLY the exact spoken words without timestamps, quotes, markdown, or explanations. If no speech is audible, return an empty string.'
+      : 'Transcribe the spoken speech accurately into plain text only (supports English, Bengali বাংলা, and Banglish naturally). Return ONLY the exact spoken words without timestamps, quotes, markdown, or explanations. If no speech is audible, return an empty string.';
+
+  const audioPart = {
+    inlineData: {
+      mimeType: normalizedMime,
+      data: cleanBase64,
+    },
+  };
+
+  const modelsToTry = ['gemini-3.5-transcribe', 'gemini-3.1-flash-lite', 'gemini-4-hydrogen'];
+  let lastError: unknown;
+
+  for (let i = 0; i < modelsToTry.length; i++) {
+    const model = modelsToTry[i];
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents: { parts: [audioPart, { text: promptText }] },
+      });
+      return (response.text ?? '').trim();
+    } catch (err) {
+      lastError = err;
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`[AudioTranscribe · ${model}]`, msg.slice(0, 180));
+      if (i < modelsToTry.length - 1 && (isTransientAiError(err) || /404|NOT_FOUND/i.test(msg))) {
+        await sleep(220 * (i + 1));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastError;
+}

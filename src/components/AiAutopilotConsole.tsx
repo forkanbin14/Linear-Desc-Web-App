@@ -2,22 +2,21 @@ import {
   AlertTriangle,
   Check,
   CheckCircle2,
-  ChevronDown,
-  Clock,
   Coins,
   Copy,
   Cpu,
   Hand,
   Languages,
-  Loader2,
   Maximize2,
+  Mic,
   Minimize2,
   RotateCcw,
   Send,
+  Square,
   Trash2,
   X,
 } from 'lucide-react';
-import { OrbitalThreeDots } from './IconicPreloader.tsx';
+import { OrbitalThreeDots, SingleDotOrbit } from './IconicPreloader.tsx';
 import { AnimatePresence, animate, motion, useMotionValue } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -46,7 +45,7 @@ function SytonAiAvatar({
 }) {
   return (
     <div
-      aria-label="Syton AI"
+      aria-label="Syston"
       className={`overflow-hidden bg-white flex items-center justify-center shrink-0 select-none ${className}`}
     >
       {size === 'md' ? (
@@ -72,137 +71,16 @@ function SytonAiAvatar({
   );
 }
 
-interface ReasoningStageItem {
-  title: string;
-  detail: string;
-}
-
 function LiveReasoningProcessCard({
   mode,
   lang,
-  currency,
-  contextText,
-  intakeSummary,
 }: {
   mode: 'command' | 'project_build';
   lang: 'en' | 'bn';
-  currency: 'BDT' | 'USD';
+  currency?: 'BDT' | 'USD';
   contextText?: string;
   intakeSummary?: string;
 }) {
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const [activeIdx, setActiveIdx] = useState(0);
-
-  const stages: ReasoningStageItem[] =
-    mode === 'project_build'
-      ? lang === 'bn'
-        ? [
-            {
-              title: '৭টি ধাপ ও প্রজেক্ট বর্ণনা পার্স করা হচ্ছে',
-              detail: intakeSummary || 'খাত, জটিলতা, স্কেল ও বাজেট সীমা যাচাই চলছে...',
-            },
-            {
-              title: 'ডিসিশন ভেরিয়েবল ও অবজেক্টিভ ফাংশন গঠন',
-              detail: `${currency === 'BDT' ? '৳ BDT' : '$ USD'} এককে বাস্তবসম্মত সহগ ও লক্ষ্য নির্ধারণ`,
-            },
-            {
-              title: 'কনস্ট্রেইন্ট ম্যাট্রিক্স ও ফিজিবিলিটি যাচাই',
-              detail: 'বাজেট, শ্রম, কাঁচামাল ও ন্যূনতম চাহিদা সীমার সামঞ্জস্য পরীক্ষা',
-            },
-            {
-              title: 'HiGHS WASM অপটিমাইজেশন সলভার চালানো হচ্ছে',
-              detail: 'সর্বোত্তম (Optimal) সমাধান, শ্যাডো প্রাইস ও স্ল্যাক বিশ্লেষণ',
-            },
-            {
-              title: 'ফলাফল ও কৌশলগত ব্যাখ্যা প্রস্তুত করা হচ্ছে',
-              detail: 'অ্যাকশন রুট ও পূর্ণাঙ্গ বিশ্লেষণ সাজানো হচ্ছে',
-            },
-          ]
-        : [
-            {
-              title: 'Parsing 7 intake parameters & project brief',
-              detail: intakeSummary || 'Validating sector, scale, complexity & budget scope...',
-            },
-            {
-              title: 'Formulating variables & objective coefficients',
-              detail: `Calibrating realistic ${currency === 'BDT' ? '৳ BDT' : '$ USD'} economic weights`,
-            },
-            {
-              title: 'Synthesizing constraint matrix & bounds',
-              detail: 'Balancing capital, labor, capacity & minimum demand limits',
-            },
-            {
-              title: 'Solving mathematical program with HiGHS WASM',
-              detail: 'Computing optimal basis, dual shadow prices & constraint slack',
-            },
-            {
-              title: 'Compiling execution trace & business brief',
-              detail: 'Preparing workspace navigation & quantitative summary',
-            },
-          ]
-      : lang === 'bn'
-        ? [
-            {
-              title: 'নির্দেশনার উদ্দেশ্য ও প্যারামিটার বিশ্লেষণ',
-              detail: contextText
-                ? `“${contextText.slice(0, 72)}${contextText.length > 72 ? '...' : ''}”`
-                : 'ভাষা, মুদ্রা ও অ্যাকশন টার্গেট শনাক্ত করা হচ্ছে',
-            },
-            {
-              title: 'প্রজেক্ট ও মডিউল কনটেক্সট মিলিয়ে দেখা হচ্ছে',
-              detail: 'অ্যাক্টিভ মডেল বা সঠিক অপটিমাইজেশন টুল নির্বাচন',
-            },
-            {
-              title: 'গাণিতিক যুক্তি ও ডেটা স্ট্রাকচার তৈরি',
-              detail: `${currency === 'BDT' ? '৳ BDT' : '$ USD'} কনফিগারেশন ও সীমা নির্ধারণ`,
-            },
-            {
-              title: 'অপটিমাইজেশন ও টুল অটোমেশন সম্পন্ন হচ্ছে',
-              detail: 'ফলাফল যাচাই ও চূড়ান্ত উত্তর তৈরি করা হচ্ছে',
-            },
-          ]
-        : [
-            {
-              title: 'Analyzing prompt intent & parameters',
-              detail: contextText
-                ? `“${contextText.slice(0, 72)}${contextText.length > 72 ? '...' : ''}”`
-                : 'Detecting language, currency & optimization intent',
-            },
-            {
-              title: 'Matching workspace context & solver module',
-              detail: 'Selecting active model state or routing to specialized engine',
-            },
-            {
-              title: 'Synthesizing mathematical structure & bounds',
-              detail: `Validating ${currency === 'BDT' ? '৳ BDT' : '$ USD'} parameters and constraints`,
-            },
-            {
-              title: 'Running HiGHS engine & verifying response',
-              detail: 'Finalizing trace steps and bilingual summary',
-            },
-          ];
-
-  useEffect(() => {
-    const start = Date.now();
-    const timer = window.setInterval(() => {
-      setElapsedMs(Date.now() - start);
-    }, 50);
-
-    const thresholds = mode === 'project_build' ? [220, 520, 900, 1380] : [160, 380, 680];
-    const timeouts = thresholds.map((ms, idx) =>
-      window.setTimeout(() => {
-        setActiveIdx((prev) => Math.max(prev, idx + 1));
-      }, ms),
-    );
-
-    return () => {
-      window.clearInterval(timer);
-      timeouts.forEach((id) => window.clearTimeout(id));
-    };
-  }, [mode]);
-
-  const elapsedSec = (elapsedMs / 1000).toFixed(1);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 8, scale: 0.98 }}
@@ -217,268 +95,31 @@ function LiveReasoningProcessCard({
           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute inset-0 rounded-xl border border-teal-400/60 pointer-events-none"
         />
-        <OrbitalThreeDots
+        <SingleDotOrbit
           surface="dark"
           stageSizeClass="w-6 h-6"
-          dotSizeClass="w-[4.5px] h-[4.5px]"
-          restRadius={4}
-          peakRadius={6.8}
-          duration={0.95}
+          dotSizeClass="w-2 h-2"
+          radius={7}
+          duration={0.9}
         />
       </div>
 
-      <div className="flex-1 bg-white border border-teal-200/90 rounded-2xl rounded-tl-sm p-3.5 max-w-[92%] space-y-3 shadow-sm overflow-hidden">
-        {/* Top Shimmering Thinking Header + Live Timer */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <motion.span
-              animate={{ opacity: [0.65, 1, 0.65] }}
-              transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-              className="text-xs font-bold text-slate-900 truncate"
-            >
-              {mode === 'project_build'
-                ? lang === 'bn'
-                  ? 'Syton AI ধাপে ধাপে চিন্তা ও বিল্ড করছে...'
-                  : 'Syton AI is reasoning & building...'
-                : lang === 'bn'
-                  ? 'Syton AI ধাপে ধাপে রিজনিং করছে...'
-                  : 'Syton AI is reasoning step by step...'}
-            </motion.span>
-          </div>
-
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-[10px] font-mono font-semibold text-teal-800 tabular-nums shrink-0">
-            <Clock className="w-2.5 h-2.5 text-teal-600" />
-            {elapsedSec}s
-          </span>
-        </div>
-
-        {/* Animated Progress Sweep Bar */}
-        <div className="relative h-1 w-full rounded-full bg-slate-100 overflow-hidden">
-          <motion.div
-            animate={{ x: ['-60%', '140%'] }}
-            transition={{ duration: 1.35, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute inset-y-0 w-1/2 rounded-full bg-gradient-to-r from-transparent via-teal-500 to-emerald-400"
-          />
-        </div>
-
-        {/* Replit / Claude-style Progressive Vertical Step Timeline */}
-        <div className="space-y-0.5 pt-0.5">
-          {stages.map((st, idx) => {
-            const isDone = idx < activeIdx;
-            const isCurrent = idx === activeIdx;
-            const isUpcoming = idx > activeIdx;
-            const isLast = idx === stages.length - 1;
-
-            return (
-              <motion.div
-                key={st.title}
-                initial={{ opacity: 0, x: -6 }}
-                animate={{ opacity: isUpcoming ? 0.42 : 1, x: 0 }}
-                transition={{ duration: 0.24, delay: idx * 0.06 }}
-                className="relative flex items-start gap-2.5 pb-2.5 last:pb-0"
-              >
-                {/* Vertical Timeline Connector Line */}
-                {!isLast && (
-                  <span
-                    aria-hidden="true"
-                    className={`absolute left-[7px] top-4 bottom-0 w-[1.5px] transition-colors duration-300 ${
-                      isDone ? 'bg-emerald-400' : isCurrent ? 'bg-teal-200' : 'bg-slate-200'
-                    }`}
-                  />
-                )}
-
-                {/* Step Status Node */}
-                <div className="relative z-10 flex items-center justify-center w-4 h-4 mt-0.5 shrink-0">
-                  {isDone ? (
-                    <motion.div
-                      initial={{ scale: 0.5, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ type: 'spring', stiffness: 520, damping: 24 }}
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 fill-emerald-50" />
-                    </motion.div>
-                  ) : isCurrent ? (
-                    <div className="relative flex items-center justify-center w-3.5 h-3.5">
-                      <motion.span
-                        animate={{ scale: [1, 1.8], opacity: [0.6, 0] }}
-                        transition={{ duration: 1.2, repeat: Infinity, ease: 'easeOut' }}
-                        className="absolute inset-0 rounded-full bg-teal-400/50"
-                      />
-                      <Loader2 className="w-3.5 h-3.5 text-teal-600 animate-spin" />
-                    </div>
-                  ) : (
-                    <span className="w-2 h-2 rounded-full border border-slate-300 bg-white" />
-                  )}
-                </div>
-
-                {/* Step Title & Sub-detail */}
-                <div
-                  className={`flex-1 min-w-0 rounded-lg transition-colors duration-200 ${
-                    isCurrent ? 'bg-teal-50/70 border border-teal-200/60 px-2 py-1.5 -mt-0.5' : ''
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={`text-[11px] leading-snug ${
-                        isDone
-                          ? 'font-medium text-slate-700'
-                          : isCurrent
-                            ? 'font-semibold text-teal-950'
-                            : 'font-medium text-slate-500'
-                      }`}
-                    >
-                      {st.title}
-                    </span>
-                    {isDone && (
-                      <span className="text-[9px] font-mono font-semibold text-emerald-700 shrink-0">
-                        {lang === 'bn' ? 'সম্পন্ন' : 'Done'}
-                      </span>
-                    )}
-                  </div>
-
-                  <AnimatePresence initial={false}>
-                    {(isCurrent || (isDone && idx === 0)) && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.18 }}
-                        className="text-[10px] text-slate-500 leading-relaxed mt-0.5 truncate"
-                      >
-                        {st.detail}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+      <div className="inline-flex items-center bg-white border border-teal-200/90 rounded-2xl rounded-tl-sm px-3.5 py-2.5 shadow-xs">
+        <motion.span
+          animate={{ opacity: [0.65, 1, 0.65] }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+          className="text-xs font-semibold text-slate-800"
+        >
+          {mode === 'project_build'
+            ? lang === 'bn'
+              ? 'Syston প্রজেক্ট তৈরি করছে...'
+              : 'Syston is building...'
+            : lang === 'bn'
+              ? 'Syston চিন্তা করছে...'
+              : 'Syston is thinking...'}
+        </motion.span>
       </div>
     </motion.div>
-  );
-}
-
-function ReasoningAccordion({
-  reasoningSteps,
-  durationMs,
-  analysisSummary,
-  defaultOpen = false,
-  lang,
-}: {
-  reasoningSteps?: string[];
-  durationMs?: number;
-  analysisSummary?: string;
-  defaultOpen?: boolean;
-  lang: 'en' | 'bn';
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  const stepsList = reasoningSteps ?? [];
-  if (stepsList.length === 0 && !analysisSummary) return null;
-
-  const formattedSec =
-    typeof durationMs === 'number' && durationMs > 0 ? (durationMs / 1000).toFixed(1) : null;
-
-  const headerLabel =
-    lang === 'bn'
-      ? formattedSec && stepsList.length > 0
-        ? `${formattedSec} সেকেন্ডে বিশ্লেষিত · ${stepsList.length}টি রিজনিং ধাপ`
-        : stepsList.length > 0
-          ? `রিজনিং প্রক্রিয়া · ${stepsList.length}টি ধাপ`
-          : 'Syton AI রিজনিং ও বিশ্লেষণ'
-      : formattedSec && stepsList.length > 0
-        ? `Thought for ${formattedSec}s · ${stepsList.length} reasoning steps`
-        : stepsList.length > 0
-          ? `Reasoning process · ${stepsList.length} steps`
-          : 'Syton AI Deep Reasoning Analysis';
-
-  return (
-    <div className="rounded-xl border border-slate-200/90 bg-slate-50/75 overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-left hover:bg-slate-100/80 transition-colors"
-      >
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="w-4.5 h-4.5 rounded-md bg-white border border-teal-200/80 flex items-center justify-center shrink-0">
-            <OrbitalThreeDots
-              surface="light"
-              stageSizeClass="w-4 h-4"
-              dotSizeClass="w-[3px] h-[3px]"
-              restRadius={2.4}
-              peakRadius={4.2}
-            />
-          </span>
-          <span className="text-[11px] font-semibold text-slate-700 truncate">{headerLabel}</span>
-        </div>
-        <motion.span
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.18 }}
-          className="text-slate-400 shrink-0"
-        >
-          <ChevronDown className="w-3.5 h-3.5" />
-        </motion.span>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
-            className="overflow-hidden border-t border-slate-200/80"
-          >
-            <div className="p-2.5 space-y-2.5 bg-white/75">
-              {stepsList.length > 0 && (
-                <div className="space-y-0.5 pl-0.5">
-                  {stepsList.map((step, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, x: -4 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.16, delay: idx * 0.045 }}
-                      className="relative flex items-start gap-2 pb-2 last:pb-0"
-                    >
-                      {idx < stepsList.length - 1 && (
-                        <span
-                          aria-hidden="true"
-                          className="absolute left-[6px] top-3.5 bottom-0 w-px bg-teal-200"
-                        />
-                      )}
-                      <span className="relative z-10 mt-1 w-3 h-3 rounded-full bg-teal-50 border border-teal-400 flex items-center justify-center shrink-0">
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
-                      </span>
-                      <span className="text-[11px] text-slate-700 leading-relaxed">{step}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-
-              {analysisSummary && (
-                <div className="p-2.5 bg-slate-900 text-slate-100 rounded-xl text-[11px] whitespace-pre-wrap leading-relaxed border border-slate-800 space-y-1">
-                  <div className="flex items-center gap-1.5 text-[10px] font-semibold text-teal-300 uppercase tracking-wider">
-                    <OrbitalThreeDots
-                      surface="dark"
-                      stageSizeClass="w-3.5 h-3.5"
-                      dotSizeClass="w-[3px] h-[3px]"
-                      restRadius={2.2}
-                      peakRadius={3.6}
-                    />
-                    <span>
-                      {lang === 'bn'
-                        ? 'গাণিতিক কাঠামো ও সারসংক্ষেপ'
-                        : 'Quantitative Model Breakdown'}
-                    </span>
-                  </div>
-                  <div className="text-slate-200">{analysisSummary}</div>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
   );
 }
 
@@ -504,6 +145,7 @@ interface AiAutopilotConsoleProps {
   busy: boolean;
   history: AiCommandHistoryItem[];
   onExecuteInstruction: (instruction: string) => Promise<void>;
+  onAbortInstruction?: () => void;
   hasActiveProject: boolean;
   activeProjectName?: string | null;
   onClearHistory?: () => void;
@@ -697,6 +339,7 @@ export function AiAutopilotConsole({
   busy,
   history,
   onExecuteInstruction,
+  onAbortInstruction,
   hasActiveProject: _hasActiveProject,
   activeProjectName: _activeProjectName,
   onClearHistory,
@@ -712,9 +355,19 @@ export function AiAutopilotConsole({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isDraggingBubble, setIsDraggingBubble] = useState(false);
   const [bubbleOnLeft, setBubbleOnLeft] = useState(false);
+  const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'recording' | 'transcribing'>('idle');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const constraintsRef = useRef<HTMLDivElement | null>(null);
   const didDragRef = useRef(false);
+  const buildAbortRef = useRef<AbortController | null>(null);
+  const recognitionRef = useRef<{
+    stop: () => void;
+    abort?: () => void;
+  } | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const baseVoiceTextRef = useRef('');
 
   const bubbleX = useMotionValue(0);
   const bubbleY = useMotionValue(0);
@@ -923,9 +576,14 @@ export function AiAutopilotConsole({
           ]
         : [];
 
+      buildAbortRef.current?.abort();
+      const controller = new AbortController();
+      buildAbortRef.current = controller;
+
       const res = await fetch('/api/ai/project-analyze-build', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           intake: intakePayload,
           answers: answersPayload,
@@ -944,14 +602,22 @@ export function AiAutopilotConsole({
 
       toast.success(
         lang === 'bn'
-          ? `Syton AI "${built.project.name}" তৈরি ও সমাধান করেছে!`
-          : `Syton AI built & solved "${built.project.name}"!`,
+          ? `Syston "${built.project.name}" তৈরি ও সমাধান করেছে!`
+          : `Syston built & solved "${built.project.name}"!`,
       );
       resetInterview();
     } catch (err) {
-      setWizardError(err instanceof Error ? err.message : 'Failed to analyze and build project');
-      setRetryAction('build');
-      setInterviewStage('final_description');
+      if ((err instanceof DOMException || err instanceof Error) && err.name === 'AbortError') {
+        setWizardError(null);
+        setRetryAction(null);
+        setInterviewStage('final_description');
+      } else {
+        setWizardError(err instanceof Error ? err.message : 'Failed to analyze and build project');
+        setRetryAction('build');
+        setInterviewStage('final_description');
+      }
+    } finally {
+      buildAbortRef.current = null;
     }
   };
 
@@ -1087,7 +753,261 @@ export function AiAutopilotConsole({
     }
   };
 
+  const stopVoiceCapture = () => {
+    try {
+      recognitionRef.current?.stop();
+    } catch {
+      // Ignore stop errors
+    }
+    recognitionRef.current = null;
+
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch {
+        // Ignore recorder stop errors
+      }
+      return;
+    }
+
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((tr) => tr.stop());
+      mediaStreamRef.current = null;
+    }
+    setVoiceState((prev) => (prev === 'transcribing' ? prev : 'idle'));
+  };
+
+  useEffect(() => {
+    return () => {
+      try {
+        recognitionRef.current?.abort?.();
+      } catch {
+        // Ignore unmount abort errors
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        try {
+          mediaRecorderRef.current.stop();
+        } catch {
+          // Ignore errors
+        }
+      }
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach((tr) => tr.stop());
+      }
+    };
+  }, []);
+
+  const startMediaRecorderTranscription = async () => {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      toast.error(
+        lang === 'bn'
+          ? 'এই ব্রাউজারে মাইক্রোফোন অডিও রেকর্ডিং সাপোর্টেড নয়।'
+          : 'Microphone audio recording is not supported in this browser.',
+      );
+      setVoiceState('idle');
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      audioChunksRef.current = [];
+
+      const candidateMimes = [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/mp4',
+        'audio/ogg;codecs=opus',
+      ];
+      const supportedMime = candidateMimes.find((m) =>
+        typeof MediaRecorder.isTypeSupported === 'function' && MediaRecorder.isTypeSupported(m),
+      );
+      const recorder = supportedMime ? new MediaRecorder(stream, { mimeType: supportedMime }) : new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (ev: BlobEvent) => {
+        if (ev.data && ev.data.size > 0) {
+          audioChunksRef.current.push(ev.data);
+        }
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((tr) => tr.stop());
+        mediaStreamRef.current = null;
+        mediaRecorderRef.current = null;
+
+        const mimeType = recorder.mimeType || supportedMime || 'audio/webm';
+        const blob = new Blob(audioChunksRef.current, { type: mimeType });
+        audioChunksRef.current = [];
+
+        if (blob.size < 200) {
+          setVoiceState('idle');
+          return;
+        }
+
+        setVoiceState('transcribing');
+        try {
+          const base64Audio = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(String(reader.result || ''));
+            reader.onerror = () => reject(new Error('Failed to read recorded audio'));
+            reader.readAsDataURL(blob);
+          });
+
+          const res = await fetch('/api/ai/transcribe-audio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              audioBase64: base64Audio,
+              mimeType,
+              language: lang,
+            }),
+          });
+          const data = (await res.json()) as { text?: string; error?: string };
+          if (!res.ok) throw new Error(data.error || 'Transcription failed');
+          const spoken = (data.text || '').trim();
+          if (spoken) {
+            setInput((prev) => {
+              const trimmed = prev.trim();
+              return trimmed ? `${trimmed} ${spoken}` : spoken;
+            });
+          } else {
+            toast.message(
+              lang === 'bn' ? 'কোনো কথা শনাক্ত হয়নি।' : 'No clear speech was detected.',
+            );
+          }
+        } catch (err) {
+          toast.error(
+            err instanceof Error
+              ? err.message
+              : lang === 'bn'
+                ? 'ভয়েস টেক্সটে রূপান্তর ব্যর্থ হয়েছে।'
+                : 'Speech transcription failed.',
+          );
+        } finally {
+          setVoiceState('idle');
+        }
+      };
+
+      recorder.start(250);
+      setVoiceState('recording');
+    } catch (err) {
+      setVoiceState('idle');
+      const isDenied =
+        err instanceof DOMException &&
+        (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError');
+      toast.error(
+        isDenied
+          ? lang === 'bn'
+            ? 'মাইক্রোফোনের অনুমতি (Permission) দেওয়া হয়নি।'
+            : 'Microphone permission was denied.'
+          : lang === 'bn'
+            ? 'মাইক্রোফোন চালু করা যায়নি।'
+            : 'Could not access microphone.',
+      );
+    }
+  };
+
+  const handleToggleVoiceInput = async () => {
+    if (voiceState === 'transcribing') return;
+    if (voiceState === 'listening' || voiceState === 'recording') {
+      stopVoiceCapture();
+      return;
+    }
+
+    type SpeechRecognitionCtor = new () => {
+      lang: string;
+      continuous: boolean;
+      interimResults: boolean;
+      onresult: ((ev: {
+        resultIndex: number;
+        results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }>;
+      }) => void) | null;
+      onerror: ((ev: { error?: string }) => void) | null;
+      onend: (() => void) | null;
+      start: () => void;
+      stop: () => void;
+      abort: () => void;
+    };
+
+    const win = window as unknown as {
+      SpeechRecognition?: SpeechRecognitionCtor;
+      webkitSpeechRecognition?: SpeechRecognitionCtor;
+    };
+    const RecognitionCtor = win.SpeechRecognition || win.webkitSpeechRecognition;
+
+    if (!RecognitionCtor) {
+      await startMediaRecorderTranscription();
+      return;
+    }
+
+    try {
+      const recognition = new RecognitionCtor();
+      recognitionRef.current = recognition;
+      baseVoiceTextRef.current = input.trim();
+      recognition.lang = lang === 'bn' ? 'bn-BD' : 'en-US';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      let switchedToFallback = false;
+
+      recognition.onresult = (event) => {
+        let transcriptText = '';
+        for (let i = 0; i < event.results.length; i++) {
+          transcriptText += event.results[i][0].transcript;
+        }
+        const cleanTranscript = transcriptText.trim();
+        const base = baseVoiceTextRef.current;
+        setInput(base ? (cleanTranscript ? `${base} ${cleanTranscript}` : base) : cleanTranscript);
+      };
+
+      recognition.onerror = (ev) => {
+        const code = ev?.error || '';
+        if (code === 'not-allowed' || code === 'audio-capture') {
+          recognitionRef.current = null;
+          setVoiceState('idle');
+          toast.error(
+            lang === 'bn'
+              ? 'মাইক্রোফোনের অনুমতি (Permission) দেওয়া হয়নি।'
+              : 'Microphone permission was denied.',
+          );
+          return;
+        }
+        if (
+          code === 'service-not-allowed' ||
+          code === 'network' ||
+          code === 'language-not-supported'
+        ) {
+          switchedToFallback = true;
+          try {
+            recognition.abort();
+          } catch {
+            // Ignore abort error
+          }
+          recognitionRef.current = null;
+          void startMediaRecorderTranscription();
+        }
+      };
+
+      recognition.onend = () => {
+        recognitionRef.current = null;
+        if (!switchedToFallback) {
+          setVoiceState((cur) => (cur === 'listening' ? 'idle' : cur));
+        }
+      };
+
+      recognition.start();
+      setVoiceState('listening');
+    } catch {
+      recognitionRef.current = null;
+      await startMediaRecorderTranscription();
+    }
+  };
+
   const submit = async (textOverride?: string) => {
+    if (voiceState === 'listening' || voiceState === 'recording') {
+      stopVoiceCapture();
+    }
     const command = (textOverride ?? input).trim();
     if (!command || busy || isInterviewBusy) return;
     if (isInterviewActive && retryAction !== null) return;
@@ -1228,24 +1148,22 @@ export function AiAutopilotConsole({
                     <SytonAiAvatar className="w-7 h-7 rounded-xl mt-0.5 shadow-xs border border-slate-200" />
                     <div className="flex-1 bg-white border border-slate-200/90 rounded-2xl rounded-tl-sm p-3.5 shadow-xs space-y-2">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-bold text-slate-900">Syton AI</span>
+                        <span className="text-xs font-bold text-slate-900">Syston</span>
                         <span className="text-[10px] font-mono text-slate-400">
                           {lang === 'bn' ? 'বাংলা / EN / বাংলিশ' : 'EN / বাংলা / Banglish'}
                         </span>
                       </div>
                       <p className="text-xs text-slate-600 leading-relaxed">
                         {lang === 'bn'
-                          ? 'হ্যালো! আমি Syton AI — আপনার স্বয়ংক্রিয় অপটিমাইজেশন এজেন্ট। নতুন প্রজেক্ট তৈরি করতে চাইলে অথবা যেকোনো অপটিমাইজেশন নির্দেশনা দিতে চাইলে নিচে মেসেজ লিখুন।'
-                          : "Hello! I'm Syton AI — your autonomous optimization agent. Type a message below to create a new project step-by-step or run any optimization command."}
+                          ? 'হ্যালো! আমি Syston — আপনার স্বয়ংক্রিয় অপটিমাইজেশন এজেন্ট। নতুন প্রজেক্ট তৈরি করতে চাইলে অথবা যেকোনো অপটিমাইজেশন নির্দেশনা দিতে চাইলে নিচে মেসেজ লিখুন।'
+                          : "Hello! I'm Syston — your autonomous optimization agent. Type a message below to create a new project step-by-step or run any optimization command."}
                       </p>
                     </div>
                   </div>
                 </motion.div>
 
                 {/* Conversation Turn Timeline */}
-                {chronologicalHistory.map((item, idx) => {
-                  const isLatestTurn = idx === chronologicalHistory.length - 1;
-                  return (
+                {chronologicalHistory.map((item) => (
                   <motion.div
                     key={item.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -1290,13 +1208,7 @@ export function AiAutopilotConsole({
                           <>
                             <div className="flex items-center justify-between gap-2">
                               <div className="flex items-center gap-1.5 min-w-0">
-                                <span className="text-xs font-bold text-slate-900">Syton AI</span>
-                                <Badge
-                                  variant="secondary"
-                                  className="h-4.5 px-1.5 text-[10px] font-mono bg-teal-50 text-teal-800 border border-teal-200/80 truncate"
-                                >
-                                  {item.response.actionType.replace(/_/g, ' ')}
-                                </Badge>
+                                <span className="text-xs font-bold text-slate-900">Syston</span>
                               </div>
                               <button
                                 type="button"
@@ -1318,19 +1230,6 @@ export function AiAutopilotConsole({
                                 )}
                               </button>
                             </div>
-
-                            {/* Collapsible Claude / ChatGPT-style Reasoning Process Accordion */}
-                            <ReasoningAccordion
-                              reasoningSteps={item.response.reasoningSteps}
-                              durationMs={item.response.reasoningDurationMs}
-                              analysisSummary={item.response.analysisSummary}
-                              defaultOpen={Boolean(
-                                isLatestTurn &&
-                                  (item.response.actionType === 'CREATE_AND_SOLVE_PROJECT' ||
-                                    item.response.analysisSummary),
-                              )}
-                              lang={lang}
-                            />
 
                             <p className="text-xs text-slate-800 leading-relaxed font-medium">
                               {item.response.replyMessage}
@@ -1361,8 +1260,7 @@ export function AiAutopilotConsole({
                       </div>
                     </div>
                   </motion.div>
-                  );
-                })}
+                ))}
 
                 {/* Step-by-Step Conversational Interview Thread inside Syton AI Chat */}
                 <AnimatePresence initial={false}>
@@ -1389,7 +1287,7 @@ export function AiAutopilotConsole({
                           <div className="flex-1 bg-white border border-teal-200/90 rounded-2xl rounded-tl-sm p-3.5 shadow-xs space-y-2.5 max-w-[90%]">
                             <div className="flex items-center justify-between gap-2">
                               <div className="flex items-center gap-1.5 min-w-0">
-                                <span className="text-xs font-bold text-slate-900">Syton AI</span>
+                                <span className="text-xs font-bold text-slate-900">Syston</span>
                                 {turn.stepBadge && (
                                   <Badge
                                     variant="secondary"
@@ -1524,8 +1422,8 @@ export function AiAutopilotConsole({
                               ? '৭/৭ ধাপ সম্পন্ন · এখন প্রজেক্টের বর্ণনা লিখে সাবমিট করুন'
                               : '7/7 Steps Done · Submit Project Description to Build'
                             : lang === 'bn'
-                              ? 'Syton AI প্রজেক্ট তৈরি ও সমাধান করছে...'
-                              : 'Syton AI building & solving project...'}
+                              ? 'Syston প্রজেক্ট তৈরি ও সমাধান করছে...'
+                              : 'Syston building & solving project...'}
                     </span>
                     {!isInterviewBusy && (
                       <button
@@ -1567,8 +1465,8 @@ export function AiAutopilotConsole({
                             ? 'আপনার উত্তর মেসেজে লিখুন অথবা উপরের অপশনে ক্লিক করুন...'
                             : 'Type your reply message or click an option above...'
                         : lang === 'bn'
-                          ? 'Syton AI-কে বাংলা বা ইংরেজিতে নির্দেশ দিন...'
-                          : 'Command Syton AI in English, Bangla, or Banglish...'
+                          ? 'Syston-কে বাংলা বা ইংরেজিতে নির্দেশ দিন...'
+                          : 'Command Syston in English, Bangla, or Banglish...'
                     }
                     className="min-h-[46px] max-h-28 resize-none border-0 bg-transparent shadow-none p-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus-visible:ring-0"
                   />
@@ -1595,33 +1493,148 @@ export function AiAutopilotConsole({
                         <span>{currency === 'BDT' ? '৳ BDT' : '$ USD'}</span>
                       </button>
 
-                      <span className="hidden sm:inline text-[10px] text-slate-400 ml-1">
-                        {lang === 'bn' ? 'Enter = পাঠান' : 'Enter to send'}
-                      </span>
+                      {(voiceState === 'listening' ||
+                        voiceState === 'recording' ||
+                        voiceState === 'transcribing') && (
+                        <span className="hidden sm:inline text-[10px] text-slate-400 ml-1">
+                          {voiceState === 'transcribing'
+                            ? lang === 'bn'
+                              ? 'রূপান্তর হচ্ছে...'
+                              : 'Transcribing...'
+                            : lang === 'bn'
+                              ? 'শুনছি... বলতে থাকুন'
+                              : 'Listening...'}
+                        </span>
+                      )}
                     </div>
 
-                    <motion.div whileTap={{ scale: 0.95 }}>
-                      <Button
-                        type="submit"
-                        disabled={busy || isInterviewBusy || retryAction !== null || !input.trim()}
-                        className="h-8 px-3.5 rounded-xl bg-gradient-to-r from-teal-700 to-emerald-700 hover:from-teal-800 hover:to-emerald-800 text-white text-xs font-semibold shadow-xs"
-                      >
-                        <span>
-                          {interviewStage === 'final_description'
+                    <div className="flex items-center gap-1.5">
+                      {/* Speech-to-Text Microphone Button */}
+                      <motion.button
+                        type="button"
+                        whileTap={{ scale: 0.92 }}
+                        onClick={handleToggleVoiceInput}
+                        disabled={busy || isInterviewBusy || retryAction !== null || voiceState === 'transcribing'}
+                        title={
+                          voiceState === 'listening' || voiceState === 'recording'
                             ? lang === 'bn'
-                              ? 'প্রজেক্ট বানান'
-                              : 'Build Project'
-                            : isInterviewActive
+                              ? 'ভয়েস বন্ধ করুন'
+                              : 'Stop dictation'
+                            : voiceState === 'transcribing'
                               ? lang === 'bn'
-                                ? 'পাঠান'
-                                : 'Send'
+                                ? 'কথা টেক্সটে রূপান্তর হচ্ছে...'
+                                : 'Transcribing speech...'
                               : lang === 'bn'
-                                ? 'চালান'
-                                : 'Execute'}
-                        </span>
-                        <Send className="w-3.5 h-3.5" />
-                      </Button>
-                    </motion.div>
+                                ? 'ভয়েস দিয়ে লিখুন (Speech to Text)'
+                                : 'Dictate with voice (Speech to Text)'
+                        }
+                        aria-label={
+                          voiceState === 'listening' || voiceState === 'recording'
+                            ? lang === 'bn'
+                              ? 'ভয়েস বন্ধ করুন'
+                              : 'Stop dictation'
+                            : lang === 'bn'
+                              ? 'ভয়েস ইনপুট'
+                              : 'Voice input'
+                        }
+                        className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-colors border ${
+                          voiceState === 'listening' || voiceState === 'recording'
+                            ? 'bg-black border-emerald-500/70 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.28)]'
+                            : voiceState === 'transcribing'
+                              ? 'bg-teal-50 border-teal-300 text-teal-700'
+                              : 'bg-slate-900 hover:bg-slate-800 border-slate-900 text-white shadow-xs disabled:opacity-45'
+                        }`}
+                      >
+                        {(voiceState === 'listening' || voiceState === 'recording') && (
+                          <motion.span
+                            animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
+                            transition={{ duration: 1.1, repeat: Infinity, ease: 'easeOut' }}
+                            className="absolute inset-0 rounded-full bg-emerald-500/35 pointer-events-none"
+                          />
+                        )}
+                        {voiceState === 'transcribing' ? (
+                          <SingleDotOrbit
+                            surface="light"
+                            stageSizeClass="w-4 h-4"
+                            dotSizeClass="w-1.5 h-1.5"
+                            radius={4.5}
+                            duration={0.8}
+                          />
+                        ) : voiceState === 'listening' || voiceState === 'recording' ? (
+                          <span
+                            aria-hidden="true"
+                            className="relative z-10 flex items-center justify-center gap-[2px] h-4"
+                          >
+                            {[
+                              { heights: [5, 11, 6, 9, 5], dur: 0.56, delay: 0 },
+                              { heights: [9, 16, 8, 14, 9], dur: 0.64, delay: 0.08 },
+                              { heights: [13, 7, 15, 9, 13], dur: 0.58, delay: 0.14 },
+                              { heights: [8, 14, 6, 12, 8], dur: 0.66, delay: 0.05 },
+                              { heights: [5, 10, 5, 11, 5], dur: 0.54, delay: 0.11 },
+                            ].map((bar, idx) => (
+                              <motion.span
+                                key={idx}
+                                animate={{ height: bar.heights }}
+                                transition={{
+                                  duration: bar.dur,
+                                  repeat: Infinity,
+                                  ease: 'easeInOut',
+                                  delay: bar.delay,
+                                }}
+                                className={`w-[2.5px] rounded-full shadow-[0_0_5px_rgba(34,197,94,0.7)] ${
+                                  idx % 2 === 0 ? 'bg-emerald-400' : 'bg-green-400'
+                                }`}
+                              />
+                            ))}
+                          </span>
+                        ) : (
+                          <Mic className="w-3.5 h-3.5" />
+                        )}
+                      </motion.button>
+
+                      <motion.div whileTap={{ scale: 0.94 }}>
+                        {busy || isInterviewBusy ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (isInterviewBusy) buildAbortRef.current?.abort();
+                              if (busy && onAbortInstruction) onAbortInstruction();
+                            }}
+                            title={lang === 'bn' ? 'চলমান — থামাতে ক্লিক করুন' : 'Running — Click to stop'}
+                            aria-label={lang === 'bn' ? 'থামান' : 'Stop'}
+                            className="relative w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center shadow-sm transition-colors"
+                          >
+                            <motion.span
+                              animate={{ scale: [1, 1.25, 1], opacity: [0.45, 0, 0.45] }}
+                              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                              className="absolute inset-0 rounded-full border border-slate-900/40 pointer-events-none"
+                            />
+                            <Square className="w-3 h-3 fill-current rounded-[2px]" />
+                          </button>
+                        ) : (
+                          <Button
+                            type="submit"
+                            disabled={retryAction !== null || !input.trim()}
+                            className="h-8 px-3.5 rounded-xl bg-gradient-to-r from-teal-700 to-emerald-700 hover:from-teal-800 hover:to-emerald-800 text-white text-xs font-semibold shadow-xs"
+                          >
+                            <span>
+                              {interviewStage === 'final_description'
+                                ? lang === 'bn'
+                                  ? 'প্রজেক্ট বানান'
+                                  : 'Build Project'
+                                : isInterviewActive
+                                  ? lang === 'bn'
+                                    ? 'পাঠান'
+                                    : 'Send'
+                                  : lang === 'bn'
+                                    ? 'চালান'
+                                    : 'Execute'}
+                            </span>
+                            <Send className="w-3.5 h-3.5" />
+                          </Button>
+                        )}
+                      </motion.div>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -1683,7 +1696,7 @@ export function AiAutopilotConsole({
               transition={{ type: 'spring', stiffness: 440, damping: 26, mass: 0.65 }}
               className="relative flex items-center justify-center"
             >
-              {/* Waving Greeting Tooltip Speech Bubble (flips side automatically based on bubble position) */}
+              {/* Greeting Tooltip Speech Bubble (flips side automatically based on bubble position) */}
               <AnimatePresence>
                 {!isDraggingBubble && (hoveredBubble || busy || history.length === 0) && (
                   <motion.button
@@ -1697,85 +1710,39 @@ export function AiAutopilotConsole({
                       opacity: 1,
                       x: 0,
                       scale: 1,
-                      y: [0, -3, 0],
                     }}
                     exit={{ opacity: 0, x: bubbleOnLeft ? -10 : 10, scale: 0.92 }}
                     transition={{
                       opacity: { duration: 0.16 },
                       scale: { duration: 0.16 },
-                      y: { duration: 2.8, repeat: Infinity, ease: 'easeInOut' },
                     }}
                     className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg shadow-slate-900/10 rounded-full text-xs font-semibold text-slate-800 hover:border-teal-500 transition-colors whitespace-nowrap absolute top-1/2 -translate-y-1/2 ${
                       bubbleOnLeft ? 'left-full ml-3' : 'right-full mr-3'
                     }`}
                   >
-                    <motion.span
-                      animate={{ rotate: [0, 22, -14, 20, -8, 0] }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        repeatDelay: 2.2,
-                        ease: 'easeInOut',
-                      }}
-                      style={{ transformOrigin: '70% 70%' }}
-                      className="inline-flex text-amber-500"
-                    >
+                    <span className="inline-flex text-amber-500">
                       <Hand className="w-3.5 h-3.5" />
-                    </motion.span>
+                    </span>
                     <span>
                       {busy
                         ? t.autopilot.runningBtn
                         : lang === 'bn'
-                          ? 'Syton AI — বলুন কী করতে হবে!'
-                          : 'Syton AI — Ask in EN / বাংলা'}
+                          ? 'Syston — বলুন কী করতে হবে!'
+                          : 'Syston — Ask in EN / বাংলা'}
                     </span>
                   </motion.button>
                 )}
               </AnimatePresence>
 
-              {/* Outer Framing & Waving Concentric Rings + Floating Chat Bubble Button */}
-              <motion.div
-                animate={{
-                  y: isDraggingBubble ? 0 : [0, -5, 0],
-                  rotate: isDraggingBubble ? 0 : [0, 2, -2, 0],
-                }}
-                transition={{
-                  y: { duration: 3.2, repeat: Infinity, ease: 'easeInOut' },
-                  rotate: { duration: 4.6, repeat: Infinity, ease: 'easeInOut' },
-                }}
-                className="relative flex items-center justify-center"
-              >
-                {/* Expanding Wave Ring 1 */}
-                <motion.span
-                  aria-hidden="true"
-                  animate={{ scale: [1, 1.48], opacity: [0.55, 0] }}
-                  transition={{ duration: 2.4, repeat: Infinity, ease: 'easeOut' }}
-                  className="absolute inset-0 rounded-full bg-teal-500/35 pointer-events-none"
-                />
-                {/* Expanding Wave Ring 2 */}
-                <motion.span
-                  aria-hidden="true"
-                  animate={{ scale: [1, 1.72], opacity: [0.4, 0] }}
-                  transition={{ duration: 2.4, repeat: Infinity, delay: 0.9, ease: 'easeOut' }}
-                  className="absolute inset-0 rounded-full border-2 border-teal-400/50 pointer-events-none"
-                />
-
-                {/* Rotating Framing Halo */}
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-                  className="p-[2.5px] rounded-full bg-gradient-to-tr from-teal-400 via-emerald-300 to-slate-800 shadow-xl shadow-teal-950/25"
-                >
-                  <motion.button
+              {/* Static Framing Ring + Stationary Floating Chat Bubble Button */}
+              <div className="relative flex items-center justify-center">
+                <div className="p-[2px] rounded-full bg-gradient-to-tr from-teal-400 via-emerald-300 to-slate-800 shadow-xl shadow-teal-950/25">
+                  <button
                     type="button"
                     onClick={() => {
                       if (didDragRef.current) return;
                       onToggleExpand();
                     }}
-                    whileHover={{ scale: 1.07 }}
-                    whileTap={{ scale: 0.93 }}
-                    animate={{ rotate: -360 }}
-                    transition={{ rotate: { duration: 10, repeat: Infinity, ease: 'linear' } }}
                     aria-label={t.autopilot.badge}
                     className="relative w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center transition-colors"
                   >
@@ -1790,9 +1757,9 @@ export function AiAutopilotConsole({
 
                     {/* Active indicator dot */}
                     <span className="absolute top-0.5 right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-slate-900" />
-                  </motion.button>
-                </motion.div>
-              </motion.div>
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}

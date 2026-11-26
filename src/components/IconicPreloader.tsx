@@ -78,6 +78,59 @@ export function OrbitalThreeDots({
   );
 }
 
+export interface SingleDotOrbitProps {
+  radius?: number;
+  dotSizeClass?: string;
+  stageSizeClass?: string;
+  duration?: number;
+  surface?: 'light' | 'dark';
+}
+
+/**
+ * Single dot orbiting infinitely in a crisp circular path — shown inside the AI chatbox
+ * whenever Syston is actively thinking, reasoning, or chatting.
+ */
+export function SingleDotOrbit({
+  radius = 7,
+  dotSizeClass = 'w-2 h-2',
+  stageSizeClass = 'w-6 h-6',
+  duration = 0.9,
+  surface = 'light',
+}: SingleDotOrbitProps) {
+  const trackBorder =
+    surface === 'dark' ? 'border-teal-400/25' : 'border-teal-500/25';
+  const dotColor =
+    surface === 'dark'
+      ? 'bg-teal-300 shadow-[0_0_8px_rgba(94,234,212,0.85)]'
+      : 'bg-teal-600 shadow-[0_0_6px_rgba(13,148,136,0.55)]';
+
+  return (
+    <div
+      aria-hidden="true"
+      className={`relative ${stageSizeClass} flex items-center justify-center shrink-0`}
+    >
+      <span
+        style={{ width: radius * 2, height: radius * 2 }}
+        className={`absolute rounded-full border ${trackBorder} pointer-events-none`}
+      />
+      <motion.div
+        animate={{ rotate: [0, 360] }}
+        transition={{
+          duration,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
+        className="relative w-full h-full flex items-center justify-center"
+      >
+        <span
+          style={{ transform: `translateY(-${radius}px)` }}
+          className={`rounded-full ${dotSizeClass} ${dotColor}`}
+        />
+      </motion.div>
+    </div>
+  );
+}
+
 /**
  * Pure, text-free 3-dot orbital spinning preloader shown before entering the app.
  */

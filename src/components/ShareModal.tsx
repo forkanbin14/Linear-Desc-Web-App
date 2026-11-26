@@ -63,8 +63,8 @@ export function ShareModal({ open, onClose, projectId, spec, activeRun }: ShareM
   const generatedMessage = useMemo(() => {
     if (shareScope === 'app' || !spec) {
       return lang === 'bn'
-        ? `Systonic Linear Desc — বাংলা ও ইংরেজিতে পূর্ণাঙ্গ LP / MIP / QP / Transportation অপটিমাইজেশন ও Syton AI ওয়ার্কস্পেস!\n\nলিংক: ${shareUrl}`
-        : `Systonic Linear Desc — Full-stack LP / MIP / QP / Transportation optimization & Syton AI workspace!\n\nOpen here: ${shareUrl}`;
+        ? `Systonic Linear Desc — বাংলা ও ইংরেজিতে পূর্ণাঙ্গ LP / MIP / QP / Transportation অপটিমাইজেশন ও Syston ওয়ার্কস্পেস!\n\nলিংক: ${shareUrl}`
+        : `Systonic Linear Desc — Full-stack LP / MIP / QP / Transportation optimization & Syston workspace!\n\nOpen here: ${shareUrl}`;
     }
 
     const result = activeRun?.result;

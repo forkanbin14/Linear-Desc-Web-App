@@ -1,4 +1,4 @@
-import { Activity, BookOpen, Compass, GitCompare, Languages, Layers, Menu, Play, Plus, Share2, Sliders, Sparkles, Truck, X } from 'lucide-react';
+import { Activity, BookOpen, Compass, GitCompare, Languages, Layers, Play, Plus, Share2, Sliders, Sparkles, Truck, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -86,6 +86,7 @@ export default function App() {
   const [autopilotExpanded, setAutopilotExpanded] = useState(false);
   const [autopilotBusy, setAutopilotBusy] = useState(false);
   const [autopilotHistory, setAutopilotHistory] = useState<AiCommandHistoryItem[]>([]);
+  const aiAbortControllerRef = useRef<AbortController | null>(null);
   const [discoveryTrigger, setDiscoveryTrigger] = useState<ProjectDiscoveryTrigger | null>(null);
   const [externalWhatIf, setExternalWhatIf] = useState<{
     key: number;
@@ -480,7 +481,14 @@ export default function App() {
     return data.diagnosis;
   };
 
+  const handleAbortAiAutomation = () => {
+    aiAbortControllerRef.current?.abort();
+  };
+
   const handleExecuteAiAutomation = async (instruction: string) => {
+    aiAbortControllerRef.current?.abort();
+    const controller = new AbortController();
+    aiAbortControllerRef.current = controller;
     setAutopilotBusy(true);
     setErrorBanner(null);
     const id = `ai_${Date.now()}`;
@@ -489,6 +497,7 @@ export default function App() {
       const res = await fetch('/api/ai/automate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           instruction,
           uiLanguage: lang,
@@ -574,12 +583,29 @@ export default function App() {
 
       setAutopilotHistory((prev) => [{ id, instruction, timestamp, response: auto }, ...prev.slice(0, 14)]);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'AI automation failed';
-      setAutopilotHistory((prev) => [{ id, instruction, timestamp, error: msg }, ...prev.slice(0, 14)]);
-      if (!autopilotExpanded) {
-        setErrorBanner(msg);
+      if ((err instanceof DOMException || err instanceof Error) && err.name === 'AbortError') {
+        const stoppedResp: AiAutomationResponse = {
+          actionType: 'NAVIGATE_AND_CONFIGURE',
+          replyLanguage: lang,
+          replyMessage:
+            lang === 'bn' ? 'প্রক্রিয়াটি থামানো হয়েছে।' : 'Generation stopped.',
+          steps: [],
+        };
+        setAutopilotHistory((prev) => [
+          { id, instruction, timestamp, response: stoppedResp },
+          ...prev.slice(0, 14),
+        ]);
+      } else {
+        const msg = err instanceof Error ? err.message : 'AI automation failed';
+        setAutopilotHistory((prev) => [{ id, instruction, timestamp, error: msg }, ...prev.slice(0, 14)]);
+        if (!autopilotExpanded) {
+          setErrorBanner(msg);
+        }
       }
     } finally {
+      if (aiAbortControllerRef.current === controller) {
+        aiAbortControllerRef.current = null;
+      }
       setAutopilotBusy(false);
     }
   };
@@ -665,8 +691,8 @@ export default function App() {
           </h2>
           <p className="text-xs text-slate-500 max-w-lg mx-auto">
             {lang === 'bn'
-              ? 'সমাধান ও গ্রাফ দেখার জন্য প্রথমে একটি নতুন প্রজেক্ট তৈরি করুন, Syton AI দিয়ে মডেল ড্রাফট করুন অথবা উদাহরণ টেমপ্লেট লোড করুন।'
-              : 'Create your first optimization model, draft one with Syton AI, or load a ready-made example to solve and inspect results.'}
+              ? 'সমাধান ও গ্রাফ দেখার জন্য প্রথমে একটি নতুন প্রজেক্ট তৈরি করুন, Syston দিয়ে মডেল ড্রাফট করুন অথবা উদাহরণ টেমপ্লেট লোড করুন।'
+              : 'Create your first optimization model, draft one with Syston, or load a ready-made example to solve and inspect results.'}
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-2.5">
@@ -767,9 +793,17 @@ export default function App() {
 
             <a
               href="/"
-              className="font-display text-sm sm:text-base font-bold tracking-tight text-slate-900 truncate"
+              className="inline-flex items-center gap-1.5 sm:gap-2 font-display text-sm sm:text-base font-bold tracking-tight text-slate-900 min-w-0"
             >
-              {t.brand}
+              <OrbitalThreeDots
+                surface="light"
+                stageSizeClass="w-7 h-7 shrink-0"
+                dotSizeClass="w-1.5 h-1.5"
+                restRadius={4.5}
+                peakRadius={8.5}
+                duration={1.4}
+              />
+              <span className="truncate">{t.brand}</span>
             </a>
           </div>
 
@@ -836,29 +870,16 @@ export default function App() {
                   {lang === 'en' ? 'বাংলা' : 'EN'}
                 </motion.button>
 
-                {/* Quick Share Button (WhatsApp & Social) */}
-                <motion.button
-                  whileTap={{ scale: 0.96 }}
-                  type="button"
-                  onClick={() => setShareModalOpen(true)}
-                  title={t.share.modalTitle}
-                  className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 min-h-[38px] min-w-[38px] sm:min-h-0 sm:min-w-0 text-xs font-semibold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors whitespace-nowrap"
-                >
-                  <Share2 className="w-3.5 h-3.5 text-emerald-700" />
-                  <span className="hidden sm:inline">{t.actions.share}</span>
-                </motion.button>
-
                 {activeVersion && !showCreateStudio ? (
-                  <motion.button
-                    whileTap={{ scale: 0.97 }}
+                  <button
                     type="button"
                     disabled={solving}
                     onClick={handleExecuteSolve}
-                    className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 min-h-[38px] sm:min-h-0 text-xs font-semibold text-white bg-teal-700 hover:bg-teal-800 disabled:opacity-50 rounded-lg transition-colors whitespace-nowrap shrink-0"
+                    className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 min-h-[38px] sm:min-h-0 text-xs font-semibold text-white bg-teal-700 hover:bg-teal-800 disabled:opacity-60 rounded-full transition-colors whitespace-nowrap shrink-0"
                   >
                     <Play className="w-3.5 h-3.5" />
                     <span>{solving ? t.actions.solving : t.actions.solveModel}</span>
-                  </motion.button>
+                  </button>
                 ) : (
                   <motion.button
                     whileTap={{ scale: 0.97 }}
@@ -955,8 +976,8 @@ export default function App() {
                       ),
                   },
                   {
-                    id: 'syton_ai',
-                    label: 'Syton AI',
+                    id: 'syston_ai',
+                    label: 'Syston',
                     active: autopilotExpanded,
                     highlight: 'ai' as const,
                     onClick: () => {
@@ -1222,7 +1243,18 @@ export default function App() {
                 </motion.span>
               ) : (
                 <>
-                  <Menu className="w-4 h-4 text-teal-700" />
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    strokeLinecap="square"
+                    strokeLinejoin="miter"
+                    aria-hidden="true"
+                    className="w-4 h-4 text-teal-700"
+                  >
+                    <path d="M14.5 5L7.5 12l7 7" />
+                  </svg>
                   <span>{lang === 'bn' ? 'মেনু' : 'Menu'}</span>
                 </>
               )}
@@ -1591,6 +1623,7 @@ export default function App() {
         busy={autopilotBusy}
         history={autopilotHistory}
         onExecuteInstruction={handleExecuteAiAutomation}
+        onAbortInstruction={handleAbortAiAutomation}
         hasActiveProject={Boolean(projectDetail)}
         activeProjectName={projectDetail?.name ?? null}
         onClearHistory={() => setAutopilotHistory([])}

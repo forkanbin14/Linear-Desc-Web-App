@@ -12,7 +12,6 @@ import {
   Plus,
   RotateCcw,
   RotateCw,
-  Share2,
   Sliders,
   Sparkles,
   Trash2,
@@ -20,7 +19,6 @@ import {
   X,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useLanguage, type AppCurrency } from '../i18n/LanguageContext.tsx';
 import type { ProjectSummary } from '../shared/types.ts';
@@ -61,7 +59,7 @@ export function RadialWheelNav({
   onOpenCreateProject,
   onOpenAiDraft,
   onOpenTemplates,
-  onOpenShare,
+  onOpenShare: _onOpenShare,
   onExecuteSolve,
   onClose,
 }: RadialWheelNavProps) {
@@ -176,37 +174,15 @@ export function RadialWheelNav({
             className="fixed inset-0 bg-slate-950/55 backdrop-blur-md"
           />
 
-          {/* Top Floating Close + Brand Strip */}
+          {/* Top Floating Close Button */}
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.1 }}
-            className="relative z-10 w-full max-w-lg flex items-center justify-between mb-1.5 sm:mb-3 px-1 shrink-0"
+            className="relative z-10 w-full max-w-lg flex items-center justify-end mb-1.5 sm:mb-3 px-1 shrink-0"
           >
-            <div className="flex items-center gap-2 text-white min-w-0">
-              <span className="w-7 h-7 rounded-full bg-teal-500/25 border border-teal-400/50 flex items-center justify-center font-mono text-[10px] font-bold text-teal-200 shrink-0">
-                SLD
-              </span>
-              <span className="text-sm font-bold tracking-tight truncate">{t.brand}</span>
-              <Badge className="hidden sm:inline-flex h-5 bg-teal-500/20 border-teal-400/35 text-teal-200 text-[10px] font-medium shrink-0">
-                {lang === 'bn' ? 'সার্কেল হুইল মেনু' : 'Rotary Wheel'}
-              </Badge>
-            </div>
-
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenShare();
-                }}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 text-xs font-semibold transition-colors"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>{t.actions.share}</span>
-              </button>
-
               <motion.button
                 whileHover={{ scale: 1.06, rotate: 90 }}
                 whileTap={{ scale: 0.92 }}
@@ -488,18 +464,18 @@ export function RadialWheelNav({
               </Button>
 
               {hasActiveModel && !creatingProject ? (
-                <Button
+                <button
                   type="button"
                   disabled={solving}
                   onClick={() => {
                     onExecuteSolve();
                     onClose();
                   }}
-                  className="h-8.5 rounded-xl bg-teal-100 hover:bg-teal-200/80 text-teal-900 text-xs font-semibold"
+                  className="h-8.5 px-3 rounded-full bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold disabled:opacity-60 transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap"
                 >
                   <Play className="w-3.5 h-3.5" />
-                  {solving ? t.actions.solving : t.actions.solveModel}
-                </Button>
+                  <span>{solving ? t.actions.solving : t.actions.solveModel}</span>
+                </button>
               ) : (
                 <button
                   type="button"

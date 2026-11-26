@@ -34,7 +34,9 @@ interface StoreState {
   auditLog: AuditLogEntry[];
 }
 
-const DATA_DIR = path.resolve(process.cwd(), '.a2z-data');
+const DATA_DIR = process.env.DATA_DIR
+  ? path.resolve(process.env.DATA_DIR)
+  : path.resolve(process.cwd(), '.a2z-data');
 const STORE_FILE = path.join(DATA_DIR, 'store.json');
 
 export const DEFAULT_SOLVER_PARAMS: SolverParams = {
